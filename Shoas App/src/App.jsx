@@ -3,11 +3,15 @@ import reactLogo from './assets/react.svg'
 import {createBrowserRouter, RouterProvider, Route} from 'react-router-dom'
 import './App.css'
 import './nav.css'
-import ShoesPage from './ShoesPage'
-import ShoeDetailsPage from './Shoe'
-import { Home } from './Homepage'
+import './Checkout.css'
+import './shoePage.css'
+import './home.css'
+import ShoesPage from './components/ShoesPage'
+import ShoeDetailsPage from './components/Shoe'
+import { Home } from './components/Homepage'
 import { RootLayout } from './Root'
-import { NavBar } from './Nav'
+import CheckoutForm from './components/Checkout'
+import { NavBar } from './components/Nav'
 
 function App() {
   const router = createBrowserRouter([
@@ -27,7 +31,10 @@ function App() {
           path:"/shoe/:id",
           element:<ShoeDetailsPage/>
         },
-        
+        {
+          path:"/checkout",
+          element:<CheckoutForm/>
+        }
       ]
     },
   ])

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import ShoeDetailsPage from './Shoe';
+import DeleteButton from './DeleteCard';
+import CheckoutButton from './Checkoutnavi';
 
 function ShoesPage() {
   const [shoes, setShoes] = useState([]);
@@ -11,7 +13,13 @@ function ShoesPage() {
   });
   const [formVisible, setFormVisible] = useState(false);
   const [selectedShoeId, setSelectedShoeId] = useState(null);
-
+  const [updateFormVisible, setUpdateFormVisible] = useState(false);
+  const [updatedData, setUpdatedData] = useState({
+    name: '',
+    price: '',
+    img: '',
+  });
+  
   useEffect(() => {
     axios
       .get('https://63f763fb833c7c9c6082f429.mockapi.io/shoesForSale')
@@ -23,6 +31,37 @@ function ShoesPage() {
     setSelectedShoeId(shoeId);
     window.location = `/shoe/${shoeId}`;
   }
+
+  function handleUpdateSubmit(event) {
+    event.preventDefault();
+    const updatedShoes = shoes.map((shoe) => {
+      if (shoe.id === selectedShoeId) {
+        return {
+          ...shoe,
+          name: updatedData.name,
+          price: updatedData.price,
+          img: updatedData.img,
+        };
+      }
+      return shoe;
+    });
+    setShoes(updatedShoes);
+    setUpdateFormVisible(false);
+    setUpdatedData({
+      name: '',
+      price: '',
+      img: '',
+    });
+  }
+  function handleUpdateCancel() {
+    setUpdateFormVisible(false);
+    setUpdatedData({
+      name: '',
+      price: '',
+      img: '',
+    });
+  }
+    
 
   function handleFormChange(event) {
     setFormData({
@@ -57,6 +96,11 @@ function ShoesPage() {
     setFormVisible(false);
   }
 
+  function handleDelete(shoeId) {
+    const updatedShoes = shoes.filter((shoe) => shoe.id !== shoeId);
+    setShoes(updatedShoes);
+  }
+
   
   const selectedShoe = useMemo(() => {
     if (!selectedShoeId) return null;
@@ -65,22 +109,83 @@ function ShoesPage() {
 
   return (
     <div>
-      <h1>Shoes Page</h1>
-      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+      <h1 className='title'>Choose From The Best</h1>
+      <div className='shoe-card' style={{ display: 'flex', flexWrap: 'wrap' }}>
         {shoes.map((shoe) => (
-          <div
+          <div className='card'
             key={shoe.id}
             style={{ width: '300px', margin: '20px' }}
-            onClick={() => handleShoeClick(shoe.id)}
+         
           >
             <img
               src={shoe.img}
               alt={shoe.name}
               style={{ width: '100%', height: '200px', objectFit: 'cover' }}
             />
+            <button  onClick={() => handleShoeClick(shoe.id)}>Details</button>
             <div style={{ padding: '10px' }}>
               <h2>{shoe.name}</h2>
               <p>{shoe.price}</p>
+              <div className='btns'>
+              <DeleteButton shoeId={shoe.id} onDelete={handleDelete} />
+              <CheckoutButton/>
+              <button className='up' onClick={() => setUpdateFormVisible(true)}>Update Shoe</button>
+              </div>
+              {updateFormVisible && (
+  <form className='up-form' onSubmit={handleUpdateSubmit}>
+    <label>
+      Name:
+      <input
+        type="text"
+        name="name"
+        value={updatedData.name}
+        onChange={(event) =>
+          setUpdatedData({
+            ...updatedData,
+            [event.target.name]: event.target.value,
+          })
+        }
+      />
+    </label>
+    <br />
+    <label>
+      Price:
+      <input
+        type="text"
+        name="price"
+        value={updatedData.price}
+        onChange={(event) =>
+          setUpdatedData({
+            ...updatedData,
+            [event.target.name]: event.target.value,
+          })
+        }
+      />
+    </label>
+    <br />
+    <label>
+      Image URL:
+      <input
+        type="text"
+        name="img"
+        value={updatedData.img}
+        onChange={(event) =>
+          setUpdatedData({
+            ...updatedData,
+            [event.target.name]: event.target.value,
+          })
+        }
+      />
+    </label>
+    <br />
+    <div className='up-btns'>
+    <button type="submit">Update Shoe</button>
+    <button type="button" onClick={handleUpdateCancel}>
+      Cancel
+    </button>
+    </div>
+  </form>
+)}
             </div>
           </div>
         ))}
@@ -124,6 +229,7 @@ function ShoesPage() {
           </button>
         </form>
       )}
+      
     </div>
     
     );

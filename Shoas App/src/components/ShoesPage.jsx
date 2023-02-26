@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ShoeDetailsPage from './Shoe';
 import DeleteButton from './DeleteCard';
@@ -26,11 +27,18 @@ function ShoesPage() {
       .then((response) => setShoes(response.data))
       .catch((error) => console.log(error));
   }, []);
-
   function handleShoeClick(shoeId) {
+    const selectedShoe = shoes.find((shoe) => shoe.id === shoeId);
     setSelectedShoeId(shoeId);
-    window.location = `/shoe/${shoeId}`;
+    return <ShoeDetailsPage shoe={selectedShoe} />;
   }
+  
+
+  // function handleShoeClick(shoeId) {
+  //   const Navigate = useNavigate();
+  //   setSelectedShoeId(shoeId);
+  //   Navigate(`/shoe/${shoeId}`);
+  // }
 
   function handleUpdateSubmit(event) {
     event.preventDefault();
@@ -109,13 +117,52 @@ function ShoesPage() {
 
   return (
     <div>
+
       <h1 className='title'>Choose From The Best</h1>
+       <button className='add-btn' onClick={() => setFormVisible(true)}>Add Shoe</button>
+      {formVisible && (
+        <form className='add' onSubmit={handleFormSubmit}>
+          <label>
+            Name:
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleFormChange}
+            />
+          </label>
+          <br />
+          <label>
+            Price:
+            <input
+              type="text"
+              name="price"
+              value={formData.price}
+              onChange={handleFormChange}
+            />
+          </label>
+          <br />
+          <label>
+            Image URL:
+            <input
+              type="text"
+              name="img"
+              value={formData.img}
+              onChange={handleFormChange}
+            />
+          </label>
+          <br />
+          <button type="submit">Add Shoe</button>
+          <button type="button" onClick={handleFormCancel}>
+            Cancel
+          </button>
+        </form>
+      )}
       <div className='shoe-card' style={{ display: 'flex', flexWrap: 'wrap' }}>
         {shoes.map((shoe) => (
           <div className='card'
             key={shoe.id}
             style={{ width: '300px', margin: '20px' }}
-         
           >
             <img
               src={shoe.img}
@@ -186,50 +233,11 @@ function ShoesPage() {
     </div>
   </form>
 )}
-            </div>
-          </div>
-        ))}
-      </div>
-      <button onClick={() => setFormVisible(true)}>Add Shoe</button>
-      {formVisible && (
-        <form onSubmit={handleFormSubmit}>
-          <label>
-            Name:
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleFormChange}
-            />
-          </label>
-          <br />
-          <label>
-            Price:
-            <input
-              type="text"
-              name="price"
-              value={formData.price}
-              onChange={handleFormChange}
-            />
-          </label>
-          <br />
-          <label>
-            Image URL:
-            <input
-              type="text"
-              name="img"
-              value={formData.img}
-              onChange={handleFormChange}
-            />
-          </label>
-          <br />
-          <button type="submit">Add Shoe</button>
-          <button type="button" onClick={handleFormCancel}>
-            Cancel
-          </button>
-        </form>
-      )}
-      
+    </div>
+    </div>
+))}
+    </div>
+     
     </div>
     
     );

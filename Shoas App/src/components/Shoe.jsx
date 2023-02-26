@@ -15,7 +15,7 @@ function ShoeDetailsPage() {
       .then((response) => setShoe(response.data))
       .catch((error) => console.log(error));
   }, [shoeId]);
-
+  
 
   return (
     <div>
